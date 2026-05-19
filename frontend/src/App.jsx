@@ -12,6 +12,7 @@ import {
   Camera,
   Star,
   Building2,
+  ArrowUp,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -117,26 +118,95 @@ const App = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [activeAttraction, setActiveAttraction] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    const cachedData = localStorage.getItem("itinerary_data");
+    let loadedFromCache = false;
+
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        setItinerary(parsed);
+        const params = new URLSearchParams(window.location.search);
+        const dayParam = params.get("day");
+        if (dayParam) {
+          const matchedDay = parsed.find((d) => d.day.toString() === dayParam);
+          if (matchedDay) setSelectedDay(matchedDay);
+        }
+        setLoading(false);
+        loadedFromCache = true;
+      } catch (err) {}
+    }
+
     fetch(API_URL)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch itinerary");
         }
-
         return res.json();
       })
       .then((data) => {
-        setItinerary(Array.isArray(data) ? data : []);
+        const dataArr = Array.isArray(data) ? data : [];
+        setItinerary(dataArr);
+        localStorage.setItem("itinerary_data", JSON.stringify(dataArr));
+
+        if (!loadedFromCache) {
+          const params = new URLSearchParams(window.location.search);
+          const dayParam = params.get("day");
+          if (dayParam) {
+            const matchedDay = dataArr.find(
+              (d) => d.day.toString() === dayParam
+            );
+            if (matchedDay) setSelectedDay(matchedDay);
+          }
+        }
         setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching itinerary:", err);
-        setItinerary([]);
-        setLoading(false);
+        if (!cachedData) {
+          setItinerary([]);
+          setLoading(false);
+        }
       });
   }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const dayParam = params.get("day");
+      if (dayParam) {
+        const matchedDay = itinerary.find((d) => d.day.toString() === dayParam);
+        if (matchedDay) setSelectedDay(matchedDay);
+      } else {
+        setSelectedDay(null);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [itinerary]);
 
   if (loading) {
     return <div className="loading">Đang tải lịch trình...</div>;
@@ -167,7 +237,11 @@ const App = () => {
                 <motion.div
                   key={day.day}
                   whileHover={{ scale: 1.05 }}
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => {
+                    setSelectedDay(day);
+                    window.history.pushState(null, "", `?day=${day.day}`);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   className="glass-card day-card"
                 >
                   <div className="day-image">
@@ -202,7 +276,10 @@ const App = () => {
             >
               <button
                 className="btn back-btn"
-                onClick={() => setSelectedDay(null)}
+                onClick={() => {
+                  setSelectedDay(null);
+                  window.history.pushState(null, "", window.location.pathname);
+                }}
               >
                 ← Quay lại tổng quan
               </button>
@@ -286,7 +363,14 @@ const App = () => {
                           </p>
 
                           {event.details && event.details.description && (
-                            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: '1.4' }}>
+                            <p
+                              style={{
+                                fontSize: "0.9rem",
+                                color: "var(--text-muted)",
+                                marginTop: "8px",
+                                lineHeight: "1.4",
+                              }}
+                            >
                               {event.details.description}
                             </p>
                           )}
@@ -315,16 +399,32 @@ const App = () => {
                   {selectedDay.hotelSuggestions &&
                     selectedDay.hotelSuggestions.length > 0 && (
                       <div className="extra-suggestions-section hotel-suggestions-section">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "1rem",
+                          }}
+                        >
                           <h3 style={{ marginBottom: 0 }}>
-                            <Building2 size={20} className="icon-blue" /> Khách sạn gợi ý
+                            <Building2 size={20} className="icon-blue" /> Khách
+                            sạn gợi ý
                           </h3>
                           <a
-                            href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(selectedDay.stay)}`}
+                            href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(
+                              selectedDay.stay
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-primary"
-                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                            style={{
+                              padding: "0.5rem 1rem",
+                              fontSize: "0.85rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
                           >
                             Tự tìm trên Booking
                           </a>
@@ -364,16 +464,32 @@ const App = () => {
                   {selectedDay.extraSuggestions &&
                     selectedDay.extraSuggestions.length > 0 && (
                       <div className="extra-suggestions-section">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "1rem",
+                          }}
+                        >
                           <h3 style={{ marginBottom: 0 }}>
-                            <Star size={20} className="icon-yellow" /> Gợi ý check-in thêm
+                            <Star size={20} className="icon-yellow" /> Gợi ý
+                            check-in thêm
                           </h3>
                           <a
-                            href={`https://www.google.com/maps/search/địa+điểm+check-in+và+khám+phá+tại+${encodeURIComponent(selectedDay.stay)}`}
+                            href={`https://www.google.com/maps/search/địa+điểm+check-in+và+khám+phá+tại+${encodeURIComponent(
+                              selectedDay.stay
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-primary"
-                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                            style={{
+                              padding: "0.5rem 1rem",
+                              fontSize: "0.85rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
                           >
                             <Map size={16} /> Tìm trên Bản đồ
                           </a>
@@ -410,16 +526,32 @@ const App = () => {
                   {selectedDay.foodSuggestions &&
                     selectedDay.foodSuggestions.length > 0 && (
                       <div className="extra-suggestions-section food-suggestions-section">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "1rem",
+                          }}
+                        >
                           <h3 style={{ marginBottom: 0 }}>
-                            <Utensils size={20} className="icon-orange" /> Địa điểm ăn uống gợi ý
+                            <Utensils size={20} className="icon-orange" /> Địa
+                            điểm ăn uống gợi ý
                           </h3>
                           <a
-                            href={`https://www.google.com/maps/search/quán+ăn+ngon+ở+${encodeURIComponent(selectedDay.stay)}`}
+                            href={`https://www.google.com/maps/search/quán+ăn+ngon+ở+${encodeURIComponent(
+                              selectedDay.stay
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-primary"
-                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                            style={{
+                              padding: "0.5rem 1rem",
+                              fontSize: "0.85rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
                           >
                             <Utensils size={16} /> Tìm quán ăn
                           </a>
@@ -468,6 +600,21 @@ const App = () => {
             attraction={activeAttraction}
             onClose={() => setActiveAttraction(null)}
           />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            onClick={scrollToTop}
+            className="scroll-to-top-btn"
+            title="Cuộn lên trên"
+          >
+            <ArrowUp size={24} />
+          </motion.button>
         )}
       </AnimatePresence>
 
@@ -949,6 +1096,30 @@ const App = () => {
           .detail-content {
             grid-template-columns: 1fr;
           }
+        }
+
+        .scroll-to-top-btn {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          background: var(--primary, #3b82f6);
+          color: white;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          z-index: 1000;
+          transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .scroll-to-top-btn:hover {
+          background: #2563eb;
+          transform: translateY(-3px);
         }
       `}</style>
     </div>

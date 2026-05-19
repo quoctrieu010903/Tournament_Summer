@@ -123,7 +123,7 @@ const itinerary = [
           "Gia đình muốn tận hưởng không gian resort riêng tư, yên tĩnh.",
         note: "Lựa chọn nghỉ dưỡng sang trọng bậc nhất khu vực Nha Trang.",
         image:
-          "https://minigofamily.com/media/tours/kham-pha-vinpearl-land-nhatrang-32.jpg",
+          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/412883158.jpg?k=a220ece8f04054da35466bd13ee87342354cc18122b73eb0fbdcfef850115325&o=",
       },
     ],
     events: [
@@ -1150,6 +1150,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/itinerary", (req, res) => {
+  res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate");
   res.json(itinerary);
 });
 

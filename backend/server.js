@@ -112,6 +112,17 @@ const itinerary = [
         image:
           "https://owa.bestprice.vn/images/hotels/uploads/liberty-central-nha-trang-6492a0d0a469b.jpg",
       },
+      {
+        name: "Vinpearl Resort Nha Trang",
+        address: "Đảo Hòn Tre, Vĩnh Nguyên, Nha Trang",
+        area: "Đảo Hòn Tre",
+        level: "Cao cấp",
+        averagePrice: "Khoảng 2.500.000 - 4.000.000 VNĐ/đêm",
+        averagePriceValue: 3000000,
+        suitableFor: "Gia đình muốn tận hưởng không gian resort riêng tư, yên tĩnh.",
+        note: "Lựa chọn nghỉ dưỡng sang trọng bậc nhất khu vực Nha Trang.",
+        image: "https://minigofamily.com/media/tours/kham-pha-vinpearl-land-nhatrang-32.jpg"
+      },
     ],
     events: [
       {
@@ -514,7 +525,7 @@ const itinerary = [
         type: "Di sản",
         desc: "Khu phố cổ nổi tiếng với đèn lồng, nhà cổ, sông Hoài và không khí hoài niệm về đêm.",
         image:
-          "Phố cổ Hội Anhttps://mia.vn/media/uploads/blog-du-lich/pho-co-hoi-an-4-1722851828.jpg",
+          "https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/hoi-an-quang-nam-vntrip.jpg",
       },
       {
         name: "Bãi biển An Bàng",
@@ -785,7 +796,7 @@ const itinerary = [
           "Gia đình muốn gần khu Tam Cốc, dễ đi tham quan sáng hôm sau.",
         note: "Phù hợp với lịch đến Ninh Bình vào chiều tối, ưu tiên nghỉ gần điểm tham quan.",
         image:
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/232410598.jpg?k=847b602b4ec171d4f764ce40f78fbd3e38201fb2360c97f2df8ecde8a11b04b8&o=&hp=1",
+          "Tam Coc Serenity Hotel & Bungalowhttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSh27yAf7JbSkofpXuhhNyGydmnecZ7TGGnJQ&s",
       },
       {
         name: "Emeralda Resort Ninh Binh",
@@ -798,7 +809,7 @@ const itinerary = [
           "Gia đình muốn nghỉ dưỡng yên tĩnh, không gian rộng và thoải mái.",
         note: "Nên chọn nếu ưu tiên nghỉ ngơi hơn là đi nhiều điểm.",
         image:
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/49882444.jpg?k=4ea74b753d9184f821744c73234e44d8143c765e6533929984da37b3a1ac66f9&o=&hp=1",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuv3tEV7Jf2_fkMdFDnCw2HVgWhh7nI2-hAw&s",
       },
     ],
     events: [
@@ -1139,9 +1150,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/itinerary", (req, res) => {
-  console.log("Request /api/itinerary");
-  console.log("Day 1 image:", itinerary[0]?.image);
-
   res.json(itinerary);
 });
 

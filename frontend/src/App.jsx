@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/itinerary";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api/itinerary";
 
 const AttractionModal = ({ attraction, onClose }) => {
   if (!attraction) return null;
@@ -129,10 +130,6 @@ const App = () => {
       .then((data) => {
         setItinerary(Array.isArray(data) ? data : []);
         setLoading(false);
-
-        console.log("API DATA:", data);
-        console.log("DAY 1 IMAGE:", data[0]?.image);
-        console.log("DAY 1 HOTELS:", data[0]?.hotelSuggestions);
       })
       .catch((err) => {
         console.error("Error fetching itinerary:", err);
@@ -287,6 +284,12 @@ const App = () => {
 
                             {event.activity}
                           </p>
+
+                          {event.details && event.details.description && (
+                            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: '1.4' }}>
+                              {event.details.description}
+                            </p>
+                          )}
                         </motion.div>
                       </div>
                     ))}
@@ -312,10 +315,20 @@ const App = () => {
                   {selectedDay.hotelSuggestions &&
                     selectedDay.hotelSuggestions.length > 0 && (
                       <div className="extra-suggestions-section hotel-suggestions-section">
-                        <h3>
-                          <Building2 size={20} className="icon-blue" /> Khách
-                          sạn gợi ý
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                          <h3 style={{ marginBottom: 0 }}>
+                            <Building2 size={20} className="icon-blue" /> Khách sạn gợi ý
+                          </h3>
+                          <a
+                            href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(selectedDay.stay)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary"
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                          >
+                            Tự tìm trên Booking
+                          </a>
+                        </div>
 
                         <div className="suggestion-list">
                           {selectedDay.hotelSuggestions.map((hotel, i) => (
@@ -351,10 +364,20 @@ const App = () => {
                   {selectedDay.extraSuggestions &&
                     selectedDay.extraSuggestions.length > 0 && (
                       <div className="extra-suggestions-section">
-                        <h3>
-                          <Star size={20} className="icon-yellow" /> Gợi ý
-                          check-in thêm
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                          <h3 style={{ marginBottom: 0 }}>
+                            <Star size={20} className="icon-yellow" /> Gợi ý check-in thêm
+                          </h3>
+                          <a
+                            href={`https://www.google.com/maps/search/địa+điểm+check-in+và+khám+phá+tại+${encodeURIComponent(selectedDay.stay)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary"
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                          >
+                            <Map size={16} /> Tìm trên Bản đồ
+                          </a>
+                        </div>
 
                         <div className="suggestion-list">
                           {selectedDay.extraSuggestions.map((sug, i) => (
@@ -387,10 +410,20 @@ const App = () => {
                   {selectedDay.foodSuggestions &&
                     selectedDay.foodSuggestions.length > 0 && (
                       <div className="extra-suggestions-section food-suggestions-section">
-                        <h3>
-                          <Utensils size={20} className="icon-orange" /> Địa
-                          điểm ăn uống gợi ý
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                          <h3 style={{ marginBottom: 0 }}>
+                            <Utensils size={20} className="icon-orange" /> Địa điểm ăn uống gợi ý
+                          </h3>
+                          <a
+                            href={`https://www.google.com/maps/search/quán+ăn+ngon+ở+${encodeURIComponent(selectedDay.stay)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary"
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                          >
+                            <Utensils size={16} /> Tìm quán ăn
+                          </a>
+                        </div>
 
                         <div className="suggestion-list">
                           {selectedDay.foodSuggestions.map((food, i) => (

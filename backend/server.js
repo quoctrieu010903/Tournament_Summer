@@ -119,9 +119,11 @@ const itinerary = [
         level: "Cao cấp",
         averagePrice: "Khoảng 2.500.000 - 4.000.000 VNĐ/đêm",
         averagePriceValue: 3000000,
-        suitableFor: "Gia đình muốn tận hưởng không gian resort riêng tư, yên tĩnh.",
+        suitableFor:
+          "Gia đình muốn tận hưởng không gian resort riêng tư, yên tĩnh.",
         note: "Lựa chọn nghỉ dưỡng sang trọng bậc nhất khu vực Nha Trang.",
-        image: "https://minigofamily.com/media/tours/kham-pha-vinpearl-land-nhatrang-32.jpg"
+        image:
+          "https://minigofamily.com/media/tours/kham-pha-vinpearl-land-nhatrang-32.jpg",
       },
     ],
     events: [
@@ -203,8 +205,7 @@ const itinerary = [
         name: "Chợ Đầm Nha Trang",
         type: "Mua đặc sản",
         desc: "Khu chợ nổi tiếng để mua quà, hải sản khô và đặc sản Nha Trang.",
-        image:
-          "https://commons.wikimedia.org/wiki/Special:Redirect/file/Cho%20Dam%20Market%20Nha%20Trang.jpg?width=800",
+        image: "https://wondertour.vn/storage/uploads/2025-07/NKNrBzbz.jpg",
       },
       {
         name: "Cầu Rồng Đà Nẵng",
@@ -386,8 +387,7 @@ const itinerary = [
         popularNote:
           "Phù hợp nếu muốn thử nhóm bánh Huế như bánh bèo, bánh nậm, bánh lọc.",
         desc: "Bánh nhỏ mềm, ăn cùng tôm chấy, mỡ hành và nước mắm ngọt.",
-        image:
-          "https://commons.wikimedia.org/wiki/Special:Redirect/file/B%C3%A1nh%20b%C3%A8o%20Hu%E1%BA%BF.jpg?width=800",
+        image: "https://statics.vinpearl.com/banh-beo-hue-01_1631680255.jpg",
       },
     ],
     hotelSuggestions: [

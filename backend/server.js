@@ -1145,11 +1145,7 @@ app.get("/api/itinerary", (req, res) => {
   res.json(itinerary);
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server is running at http://localhost:${PORT}`);
-  console.log(`Available endpoints:`);
-  console.log(`GET http://localhost:${PORT}/`);
-  console.log(`GET http://localhost:${PORT}/api/itinerary`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
 module.exports = app; // Hỗ trợ chạy trên Vercel Serverless Function
